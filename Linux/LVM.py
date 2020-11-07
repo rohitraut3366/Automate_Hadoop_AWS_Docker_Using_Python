@@ -84,6 +84,3 @@ def Local_OS_LVM():
         input("Enter to continue..")
         os.system("clear")
 
-
-
-Local_OS_LVM()
