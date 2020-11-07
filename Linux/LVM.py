@@ -85,5 +85,3 @@ def Local_OS_LVM():
         os.system("clear")
 
 
-
-Local_OS_LVM()
