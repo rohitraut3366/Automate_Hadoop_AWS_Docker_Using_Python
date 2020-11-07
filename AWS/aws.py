@@ -108,7 +108,7 @@ def volume():
             device = input("Enter  device Name: ")
             instance_id = input("Instance ID: ")
             volume_id = input("Volume ID: ")
-            os.system("aws ec2 --device{} --instance-id {} --volume-id {} ".format(device,instance_id,volume_id))
+            os.system("aws ec2 --device {} --instance-id {} --volume-id {} ".format(device,instance_id,volume_id))
         elif choice == "5":
             volume_id = input("Volume ID: ")
             os.system("aws ec2 detach-volume --volume-id {} --force".format(volume_id))
