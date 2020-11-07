@@ -5,6 +5,7 @@ from AWS.aws import Key, volume, s3, securityGroup, ec2, cloudFront
 from BIGDATA.hadoop import LocalHadoopInstall, LocalCurrentNode, RemoteHadoopInstall, RemoteCurrentNode, \
     CloudHadoopInstall, CloudCurrentNode
 from Devops.Docker.Docker import dockerMenu
+from Linux.LVM import Local_OS_LVM
 from Linux.webserver import localWbs, cloudWbs, remoteWbs
 
 menuPass = "9a17e517"
@@ -33,9 +34,11 @@ def mainMenu():
             Enter 4 to start/stop hadoop service
             Enter 5 to get cluster report
             Enter 6 to  see all files
-            Enter 7 to configure webserver
-            Enter 8 to work on docker
-            Enter 9 to exit
+            Enter 7 to put/rm/read File
+            Enter 8 to configure webserver
+            Enter 9 to work on docker
+            Enter 10 to implement LVM
+            Enter 11 to exit
                 """)
             choice = input("Enter your choice: ")
             if choice == "1":
@@ -65,11 +68,24 @@ def mainMenu():
             elif choice == "6":
                 os.system("hadoop fs -ls /")
             elif choice == "7":
+                c = input("Enter put/rm/read File")
+                if c.lower() =='put':
+                    file_name = input("Enter file name [PATH/filename] : ")
+                    os.system("hadoop fs -put {} /".format(file_name))
+                elif c.lower() == "rm":
+                    file_name = input("Enter File name : ")
+                    os.system("hadoop fs -rm /{}".format(file_name))
+                elif c.lower() == "read":
+                    file_name = input("Enter file name : ")
+                    os.system("hadoop fs -cat /{}".format(file_name))
+            elif choice == "8":
                 output = subprocess.getoutput("cat /etc/os-release")
                 localWbs(output)
-            elif choice == '8':
+            elif choice == '9':
                 dockerMenu()
-            elif choice == "9":
+            elif choice == "10":
+                Local_OS_LVM()
+            elif choice == "11":
                 exit()
             else:
                 print("not supported")
@@ -91,8 +107,9 @@ def mainMenu():
                 Enter 4 for start/stop hadoop service
                 Enter 5 for get cluster report
                 Enter 6 to see all files in cluster
-                Enter 7 to configure webserver
-                Enter 8 to exit
+                Enter 7 to put/rm/read File
+                Enter 8 to configure webserver
+                Enter 9 to exit
                 """)
                 choice = input("Enter you choice : ")
                 if choice == "1":
@@ -148,11 +165,22 @@ def mainMenu():
                 elif choice == '6':
                     os.system(
                         "sshpass -p {} ssh {}@{} hadoop fs -ls /".format(password, username, ip))
-                elif choice == '7':
+                elif choice == "7":
+                    c = input("Enter put/rm/read File")
+                    if c.lower() == 'put':
+                        file_name = input("Enter file name [PATH/filename] : ")
+                        os.system("sshpass -p {} ssh {}@{} hadoop fs -put {} /".format(password, username, ip, file_name))
+                    elif c.lower() == "rm":
+                        file_name = input("Enter File name : ")
+                        os.system("sshpass -p {} ssh {}@{} hadoop fs -rm /{}".format(password, username, ip, file_name))
+                    elif c.lower() == "read":
+                        file_name = input("Enter file name : ")
+                        os.system("sshpass -p {} ssh {}@{} hadoop fs -cat /{}".format(password, username, ip, file_name))
+                elif choice == '8':
                     output = subprocess.getoutput(
                         "sshpass -p {} ssh {}@{} cat /etc/os-release".format(password, username, ip))
                     localWbs(output)
-                elif choice == '8':
+                elif choice == '9':
                     exit()
                 else:
                     print("not supported")
@@ -169,8 +197,9 @@ def mainMenu():
                 Enter 4 start/stop hadoop service
                 Enter 5 to get cluster report
                 Enter 6 to see all files in cluster
-                Enter 7 to configure webserver
-                Enter 8 to exit
+                Enter 7 to put/read/rm file in cluster
+                Enter 8 to configure webserver
+                Enter 9 to exit
                 """)
                 choice = input("Enter your choice: ")
                 if choice == "1":
@@ -224,10 +253,21 @@ def mainMenu():
                 elif choice == '6':
                     os.system(
                         "ssh -i {} {}@{} sudo hadoop fs -ls /".format(key, username, ip))
-                elif choice == '7':
+                elif choice == "7":
+                    c = input("Enter put/rm/read File")
+                    if c.lower() == 'put':
+                        file_name = input("Enter file name [PATH/filename] : ")
+                        os.system("ssh -i {} {}@{} hadoop fs -put {} /".format(key, username, ip, file_name))
+                    elif c.lower() == "rm":
+                        file_name = input("Enter File name : ")
+                        os.system("ssh -i {} {}@{} hadoop fs -rm /{}".format(key, username, ip, file_name))
+                    elif c.lower() == "read":
+                        file_name = input("Enter file name : ")
+                        os.system("ssh -i {} {}@{} hadoop fs -cat /{}".format(key, username, ip, file_name))
+                elif choice == '8':
                     os.system("ssh -i {} {}@{} cat /etc/os-release".format(key, username, ip))
                     cloudWbs(key=key, username=username, ip=ip)
-                elif choice == '8':
+                elif choice == '9':
                     exit()
                 else:
                     print("not supported")
