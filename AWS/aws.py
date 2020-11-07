@@ -1,4 +1,4 @@
-import os, subprocess
+import os
 
 # from menu import mainMenu
 
@@ -76,7 +76,7 @@ def securityGroup():
             else:
                 print("Wrong Choice")
         elif choice == 6:
-            break
+            return
         else:
             print("Wrong Choice")
         input("Enter to continue..")
@@ -113,9 +113,10 @@ def volume():
             volume_id = input("Volume ID: ")
             os.system("aws ec2 detach-volume --volume-id {} --force".format(volume_id))
         elif choice == "6":
-            print("modify size only support others comming soon")
+            print("modify size only supported and  others features are comming soon")
             size = input("Enter size: ")
-            os.system("aws ec2 modify-volume --volume-id --size {}".format(size))
+            volume_id = input("Enter Volume ID : ")
+            os.system("aws ec2 modify-volume --volume-id {} --size {}".format(volume_id, size))
         elif choice == "7":
             return
         else:
@@ -154,7 +155,6 @@ def ec2():
             id3 = input("Enter your instance id :")
             os.system("aws ec2 stop-instances --instance-ids {}".format(id3))
         else:
-            print("Wrong Choice")
             return
 
 
@@ -165,7 +165,7 @@ def s3():
                     Press 2: for adding object	
                     Press 3: for bucket list
                     Press 4: for deleting bucket
-                    Press 5: for deleting object of bucket
+                    Press 5: for deleting object in bucket
                     ''')
         choice = input("Enter your choice :")
         if choice == "1":
