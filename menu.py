@@ -283,7 +283,7 @@ def mainMenu():
         print("================================================================")
 
         print("""\n\n
-        		Press 1: FOR CREATE KEY PAIR
+        		Press 1: FOR KEY PAIR SERVICE
         		Press 2: FOR SECURITY GROUP	
         		Press 3: FOR EC2 INSTANCES
         		Press 4: FOR VOLUMES

@@ -15,7 +15,7 @@ def Key():
         choice = input("        Enter your choice : ")
         if choice == "1":
             key_name = input("Enter Key-name: ")
-            os.system("aws ec2 create-key-pair --key-name {} --query KeyMaterial --output text >  {}".format(key_name, key_name))
+            os.system("aws ec2 create-key-pair --key-name {} --query KeyMaterial --output text >  {}.pem".format(key_name, key_name))
         elif choice == "2":
             key_name = input("Enter Key-name")
             os.system("aws ec2 delete-key-pair --key-name {}".format(key_name))
@@ -141,9 +141,11 @@ def ec2():
             cnt = int(input("How many instance you want to launch: "))
             key_name = input("Enter your keyname: ")
             subnet_id = input("Enter subnet-id : ")
+            instance_type = input("Enter instagnce type")
+            security_group_id = input("Security Group: ")
             os.system(
-                "aws ec2 run-instances --image-id {} --instance-type t2.micro --count {} --subnet-id {} --key-name {} ".format(
-                    image_id, cnt, subnet_id, key_name))
+                "aws ec2 run-instances --image-id {} --instance-type {} --count {} --subnet-id {} --key-name {} --security-group-ids {}".format(
+                    image_id,instance_type ,cnt, subnet_id, key_name,security_group_id))
             print("Instance Launched !!!")
         elif choice == "3":
             id2 = input("Enter your instance id :")
