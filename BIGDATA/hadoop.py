@@ -318,26 +318,27 @@ def CloudCurrentNode(username, key_path, Ip):
 
 def HadoopMainMenu():
     os.system('tput setaf 3')
-    print("\t\t\tWelcome to my menu !!")
-    print("\t\t\t---------------------")
+    print("\t\t\t\t=====================================================")
+    print("\t\t\t\t\t\tWelcome to Hadoop menu !!")
+    print("\t\t\t\t=====================================================")
     os.system('tput setaf 4')
 
     ostype = input("""
-                   	Enter local to work on local operating system
-                   	Enter remote to work on remote operating system
-                   """)
+                Enter local to work on local operating system
+                Enter remote to work on remote operating system
+                :""")
     if ostype == "local":
         while True:
             os.system('tput setaf 4')
             print("""
-            Enter 1 to install hadoop
-            Enter 2 to configure node
-            Enter 3 to format namenode
-            Enter 4 to start/stop hadoop service
-            Enter 5 to get cluster report
-            Enter 6 to  see all files
-            Enter 7 to put/rm/read File
-            Enter 8 to return 
+                Enter 1 to install hadoop
+                Enter 2 to configure node
+                Enter 3 to format namenode
+                Enter 4 to start/stop hadoop service
+                Enter 5 to get cluster report
+                Enter 6 to  see all files
+                Enter 7 to put/rm/read File
+                Enter 8 to return 
                 """)
             os.system('tput setaf 7')
             choice = input("Enter your choice: ")

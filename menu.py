@@ -4,7 +4,7 @@ import getpass
 from AWS.aws import Aws
 from BIGDATA.hadoop import HadoopMainMenu
 from Devops.Docker.Docker import dockerMain
-from Linux.LVM import Lvm
+from Linux.LVM import LVM
 
 menuPass = "1"
 x = getpass.getpass()
@@ -24,15 +24,16 @@ def mainMenu():
                     Press 5: For Exit
              """)
         os.system('tput setaf 7')
-        choice = int(input("\n Enter Your Choice:"))
-        if choice == 1:
+        choice = input("\n Enter Your Choice:")
+        if choice == '1':
             HadoopMainMenu()
-        elif choice == 2:
+        elif choice == '2':
             Aws()
-        elif choice == 3:
-            Lvm()
-        elif choice == 4:
+        elif choice == '3':
+            LVM()
+        elif choice == '4':
             dockerMain()
         else:
             exit()
 
+mainMenu()

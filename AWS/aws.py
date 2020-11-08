@@ -174,6 +174,8 @@ def ec2():
         else:
             print("Wrong Choice")
             return
+        input("Enter to continue......")
+        os.system("clear")
 
 
 ##################################################################
@@ -186,6 +188,7 @@ def s3():
                     Press 3: for bucket list
                     Press 4: for deleting bucket
                     Press 5: for deleting object of bucket
+                    Press 6: to return 
                     ''')
         os.system('tput setaf 7')
         choice = input("Enter your choice :")
@@ -214,9 +217,13 @@ def s3():
             bn = input("\n ENTER BUCKET NAME: ")
             on = input("\n ENTER OBJECT NAME: ")
             os.system("aws s3 rm s3://{bucket}/{oname}".format(bucket=bn, oname=on))
-        else:
-            print("Wrong choice")
+        elif choice == '6':
             return
+        else:
+            print("Wrong Choice")
+        input("Enter to continue......")
+        os.system("clear")
+
 
 
 ##########################################################3
@@ -232,24 +239,26 @@ def cloudFront():
         else:
             print("Exit")
             return
+        input("Enter to continue......")
+        os.system("clear")
 
 
 ###########################################################
 def Aws():
     os.system("aws configure")
-    os.system('tput setaf 4')
-    print('''
-        Press 1: FOR KEY PAIR
-        Press 2: FOR SECURITY GROUP	
-        Press 3: FOR EC2 INSTANCES
-        Press 4: FOR VOLUMES
-        Press 5: FOR S3
-        Press 6: FOR CLOUD FRONT
-        Press 7: TO RETURN
-        ''')
-    os.system('tput setaf 7')
     while True:
-        choice = int(input("\n Enter Your Choice:"))
+        os.system('tput setaf 4')
+        print('''
+                Press 1: FOR KEY PAIR
+                Press 2: FOR SECURITY GROUP	
+                Press 3: FOR EC2 INSTANCES
+                Press 4: FOR VOLUMES
+                Press 5: FOR S3
+                Press 6: FOR CLOUD FRONT
+                Press 7: TO RETURN
+                ''')
+        os.system('tput setaf 7')
+        choice = input("\n Enter Your Choice:")
         if choice == '1':
             Key()
         elif choice == '2':
@@ -266,4 +275,5 @@ def Aws():
             return
         else:
             print("Wrong choice")
+        os.system("clear")
 
