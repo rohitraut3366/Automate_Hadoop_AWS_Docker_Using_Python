@@ -3,14 +3,15 @@ import os
 from Linux.webserver import webDocker
 
 
-
 def dockerImage():
     while True:
+        os.system('tput setaf 4')
         print("""
         Enter 1 to pull
         Enter 2 to remove image
         Enter 3 to docker manu
         """)
+        os.system('tput setaf 7')
         choice = input("Enter : ")
         if choice == "1":
             default = "latest"
@@ -26,8 +27,10 @@ def dockerImage():
         input("Enter to continue..")
         os.system("clear")
 
+
 def dockerContainer():
     while True:
+        os.system('tput setaf 4')
         print("""
         Enter 1 to see running containers
         Enter 2 to see all containers
@@ -37,6 +40,7 @@ def dockerContainer():
         Enter 6 to start container
         Enter 7 to docker menu
         """)
+        os.system('tput setaf 7')
         choice = input("Enter: ")
         if choice == '1':
             os.system("docker  ps -a")
@@ -62,8 +66,9 @@ def dockerContainer():
         os.system("clear")
 
 
-def dockerMenu():
+def dockerMain():
     while True:
+        os.system('tput setaf 4')
         print("""
         Enter 1 to check docker info
         Enter 2 to work with Container Images
@@ -72,6 +77,7 @@ def dockerMenu():
         Enter 5 to exit
         Enter 6 to main menu
         """)
+        os.system('tput setaf 7')
         choice = input("Enter your choice: ")
         if choice == '1':
             os.system("docker info")
@@ -89,4 +95,4 @@ def dockerMenu():
             return
         else:
             print("Wrong choice")
-
+#########################################

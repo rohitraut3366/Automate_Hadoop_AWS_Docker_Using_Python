@@ -1,7 +1,7 @@
 import os
-
-def Local_OS_LVM():
+def Lvm():
     while True:
+        os.system('tput setaf 4')
         print("WELCOME TO MY LVM MENU")
         print("PRESS 1:DISPLAY HARDISK INFORMATION")
         print("PRESS 2:DISPLAY MOUNT POINTS")
@@ -10,41 +10,43 @@ def Local_OS_LVM():
         print("PRESS 5:EXTEND VG/LV")
         print("PRESS 6:REDUCE LV")
         print("PRESS 7:TO Return ")
+        os.system('tput setaf 7')
         choice = input("ENTER YOUR CHOICE:")
         if choice == '1':
             os.system("fdisk -l")
         if choice == '2':
-            os.system("dh -hT")
+            os.system("df -hT")
         elif choice == '3':
-                    print("""
+                os.system('tput setaf 4')
+                print("""
                             PRESS 1:CREATE PV
                             PRESS 2:CREATE VG
                             PRESS 3:CREATE LV
                             PRESS 4:MOUNT LV
                             PRESS 5: RETURN
                     """)
-                    choice = input("Enter your choice: ")
-                    if choice == '1':
-                        hd1 = input("ENTER DISK NAME: ")
-                        os.system("pvcreate /dev/" + hd1)
-                    elif choice == '2':
-                        vg_name = input("ENTER VG NAME: ")
-                        space_separated_pv_name = input("space separated pv name : ").split()
-                        x = " /dev/".join(space_separated_pv_name)
-                        os.system("vgcreate " + vg_name + " "+"/dev/{}".format(x))
-                    elif choice == '3':
-                        lv_name = input("ENTER NAME OF LV:")
-                        vg_name = input("ENTER VG NAME: ")
-                        size_of_lv = input("ENTER SIZE OF LV:")
-                        os.system("lvcreate --size +" + size_of_lv + "G --name " + lv_name + " " + vg_name)
-
-                    elif choice == "5":
-                        os.system("mkfs.ext4 /dev/" + vg_name + "/" + lv_name)
-                        folder = input("ENTER FOLDER NAME:")
-                        os.system("mkdir /" + folder)
-                        os.system("mount /dev/" + vg_name + "/" + lv_name + " " + "/" + folder)
-                    elif choice == "5":
-                        return
+                os.system('tput setaf 7')
+                choice = input("Enter your choice: ")
+                if choice == '1':
+                    hd1 = input("ENTER DISK NAME: ")
+                    os.system("pvcreate /dev/" + hd1)
+                elif choice == '2':
+                    vg_name = input("ENTER VG NAME: ")
+                    space_separated_pv_name = input("space separated pv name : ").split()
+                    x = " /dev/".join(space_separated_pv_name)
+                    os.system("vgcreate " + vg_name + " "+"/dev/{}".format(x))
+                elif choice == '3':
+                    lv_name = input("ENTER NAME OF LV:")
+                    vg_name = input("ENTER VG NAME: ")
+                    size_of_lv = input("ENTER SIZE OF LV:")
+                    os.system("lvcreate --size +" + size_of_lv + "G --name " + lv_name + " " + vg_name)
+                elif choice == "5":
+                    os.system("mkfs.ext4 /dev/" + vg_name + "/" + lv_name)
+                    folder = input("ENTER FOLDER NAME:")
+                    os.system("mkdir /" + folder)
+                    os.system("mount /dev/" + vg_name + "/" + lv_name + " " + "/" + folder)
+                elif choice == "5":
+                    return
 
         elif choice == '4':
             c = input("ENTER PV/LV/VG: ")
@@ -79,9 +81,8 @@ def Local_OS_LVM():
             return
         else:
             print("wrong choice")
-            exit()
+            return
 
         input("Enter to continue..")
         os.system("clear")
-
-
+#######################################################

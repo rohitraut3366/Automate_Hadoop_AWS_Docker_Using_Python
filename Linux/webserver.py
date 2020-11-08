@@ -1,5 +1,4 @@
-import os
-import subprocess
+import os,subprocess
 
 
 def localWbs(output):
@@ -20,6 +19,7 @@ def localWbs(output):
             print("error")
     else:
         pass
+##################################################
 
 
 def remoteWbs(output, usernme, password, ip):
@@ -33,6 +33,7 @@ def remoteWbs(output, usernme, password, ip):
                 os.system("sshpass -p {} ssh {}@{} systemctl start apache2".format(password, usernme, ip))
     else:
         pass
+###################################################
 
 
 def cloudWbs(output, username, key, ip):
@@ -46,11 +47,14 @@ def cloudWbs(output, username, key, ip):
                 os.system("ssh -i {} {}@{} systemctl start apache2".format(key, username, ip))
     else:
         pass
-
+##################################################
 
 def webDocker(output,name):
-    if "rhel" in output or "CentOS" in output:
+    if "CentOS" in output:
         os.system("docker exec {} yum install httpd -y".format(name))
         os.system("docker exec {} /usr/sbin/httpd".format(name))
     else:
-        print("This code only support RHEL/CENTOS")
+        print("This code only support CENTOS")
+
+
+#############################################
