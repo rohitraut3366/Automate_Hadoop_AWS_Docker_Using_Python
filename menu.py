@@ -18,8 +18,11 @@ def mainMenu():
     while True:
         os.system('tput setaf 4')
         print("""
-                    Press 1: For Hadoop
-                    Press 2: For AWS	
+        ===================================================
+                   Welcome to Menu Program
+        ===================================================
+                    Press 1: For AWS
+                    Press 2: For Hadoop	
                     Press 3: For Lvm
                     Press 4: For Docker
                     Press 5: For Webserver 
@@ -28,9 +31,9 @@ def mainMenu():
         os.system('tput setaf 7')
         choice = input("\n Enter Your Choice:")
         if choice == '1':
-            HadoopMainMenu()
-        elif choice == '2':
             Aws()
+        elif choice == '2':
+            HadoopMainMenu()
         elif choice == '3':
             LVM()
         elif choice == '4':
