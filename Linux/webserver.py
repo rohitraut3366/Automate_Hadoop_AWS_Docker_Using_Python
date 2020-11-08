@@ -1,4 +1,4 @@
-import os, subprocess
+import os, subprocess ,getpass
 
 
 def localWbs(output):
@@ -49,12 +49,89 @@ def cloudWbs(output, username, key, ip):
         pass
 ##################################################
 
-def webDocker(output,name):
+def LocalwebDocker(output,name):
     if "CentOS" in output:
         os.system("docker exec {} yum install httpd -y".format(name))
         os.system("docker exec {} /usr/sbin/httpd".format(name))
     else:
         print("This code only support CENTOS")
+def PasswordwebDocker(username,password,IP,output,name):
+    if "CentOS" in output:
+        os.system("sshpass -p {} ssh {}@{} sudo docker exec {} sudo yum install httpd -y".format(password,username,IP,name))
+        os.system("sshpass -p {} ssh {}@{} sudo docker exec {} sudo /usr/sbin/httpd".format(password,username,IP,name))
+    else:
+        print("This code only support CENTOS")
+def KeywebDocker(path,username,IP,output,name):
+    if "CentOS" in output:
+        os.system("ssh -i {} {}@{} sudo docker exec {} sudo yum install httpd -y".format(path,username,IP,name))
+
+        os.system("ssh -i {} {}@{} sudo docker exec {} sudo /usr/sbin/httpd".format(path,username,IP,name))
+    else:
+        print("This code only support CENTOS")
 
 
 #############################################
+
+
+
+
+def webserverMain():
+    while True:
+        print("""
+        Enter 1 to Configure on Local System
+        Enter 2 to Configure on remote system
+        Enter 3 to configure on docker container
+        Enter 4 to return
+        """)
+        choice = input("Enter  your choice: ")
+        if choice == "1":
+            output = os.system("cat /etc/release-os")
+            LocalwebDocker(output)
+
+
+
+        elif choice == "2":
+            ip = input("Enter IP address: ")
+            username = input("Enter username: ")
+            key_or_pass = input("Login in VM using key/password: ")
+            if key_or_pass == "password":
+                password = getpass.getpass()
+                output = subprocess.getoutput("sshpass -p {} ssh {}@{} cat /etc/release-os".format(password,username,ip))
+                remoteWbs(output,username,password,ip)
+            elif key_or_pass.lower() == "key":
+                path = input("Enter remote os login key path [path/key.pem] ")
+                output= subprocess.getoutput("ssh -i {} {}@{} cat /etc/release-os".format(path,username,ip))
+                cloudWbs(output,username,path,ip)
+            else:
+                print("Wrong choice")
+
+
+
+
+        elif choice == "3":
+            vm = input("VM is local/remote where docker is running : ")
+            if vm == "local":
+                con_name = input("Enter container name/ID :")
+                output = subprocess.getoutput("docker exec {} cat /etc/release-os".format(con_name))
+                LocalwebDocker(output,con_name)
+            elif vm  == "remote":
+                ip = input("Enter VM IP address: ")
+                username = input("Enter username: ")
+                key_or_pass = input("Login to VM using key/password: ")
+                if key_or_pass == "password":
+                    password = input("Enter vm password: ")
+                    con_name = input("Enter container name: ")
+                    output = subprocess.getoutput("sshpass -p {} ssh {}@{} docker exec {} cat /etc/release-os".format(password,username,ip,con_name))
+                    PasswordwebDocker(username,password,ip,output,con_name)
+                elif key_or_pass.lower() == "key":
+                    path = input("Enter key path [path/key.pem]")
+                    con_name = input("Enter container Name: ")
+                    output = subprocess.getoutput("ssh -i {} {}@{} docker exec {} cat /etc/release-os".format(path,username,ip,con_name))
+                    KeywebDocker(path,username,ip,output,con_name)
+                else:
+                    print("Wrong choice")
+            else:
+                print("Wrong choice")
+        else:
+            print("Wrong Choice")
+
