@@ -283,13 +283,13 @@ def mainMenu():
         print("================================================================")
 
         print("""\n\n
-        		Press 1: FOR KEY PAIR SERVICE
-        		Press 2: FOR SECURITY GROUP	
-        		Press 3: FOR EC2 INSTANCES
-        		Press 4: FOR VOLUMES
-        		Press 5: FOR S3
-        		Press 6: FOR CLOUD FRONT
-        		""")
+                Press 1: FOR KEY PAIR SERVICE
+                Press 2: FOR SECURITY GROUP	
+                Press 3: FOR EC2 INSTANCES
+                Press 4: FOR VOLUMES
+                Press 5: FOR S3
+                Press 6: FOR CLOUD FRONT
+                """)
         choice = int(input("\n Enter Your Choice:"))
         if choice == 1:
             Key()

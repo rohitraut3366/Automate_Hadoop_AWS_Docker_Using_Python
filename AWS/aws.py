@@ -180,6 +180,7 @@ def s3():
             os.system("aws s3 ls s3://{bucket} ".format(bucket=bn))
             op = input("ADD AN OBJECT (Y/N):")
             if op == "Y":
+                bn = input("\n ENTER BUCKET NAME: ")
                 lc = input("ENTER location: ")
                 os.system("aws s3 ls s3://{bucket} ")
                 os.system("aws s3 sync {location} s3://{bucket} --acl public-read".format(location=lc, bucket=bn))
@@ -187,8 +188,7 @@ def s3():
             os.system('aws s3api list-buckets --query "Buckets[].Name"')
         elif choice == "4":
             bn = input("\n ENTER BUCKET NAME: ")
-            r = input("\n ENTER REGION:")
-            os.system("aws s3api delete-bucket --bucket {bucket} --region {region}".format(bucket=bn, region=r))
+            os.system("aws s3 rb s3://{} --force".format(bucket=bn))
         elif choice == "5":
             bn = input("\n ENTER BUCKET NAME: ")
             on = input("\n ENTER OBJECT NAME: ")
@@ -203,10 +203,9 @@ def cloudFront():
         cf = input('Press 1: for creating distribution')
         if cf == "1":
             bucketnm = input("\n ENTER RESPECTIVE BUCKET NAME:")
-            objectnm = input("\n ENTER THE OBJECT NAME YOU WANT TO DISTRIBUTE [optional]:")
             os.system(
-                "aws cloudfront create-distribution --origin-domain-name {}.s3.amazonaws.com --default-root-object {}".format(
-                    bucketnm, objectnm))
+                "aws cloudfront create-distribution  --origin-domain-name  {}.s3.amazonaws.com ".format(
+                    bucketnm))
         else:
             print("Exit")
             return
