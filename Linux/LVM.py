@@ -1,323 +1,274 @@
 import os
-import getpass
+import subprocess
 
 
-def Local_LVM():
+def authTypePass(username, password, ip):
     while True:
         os.system('tput setaf 4')
         print("""
-        ====================================
-                WELCOME TO MY LVM MENU
-        ====================================
-        PRESS 1:DISPLAY HARDISK INFORMATION
-        PRESS 2:DISPLAY MOUNT POINTS
-        PRESS 3:CREATE PV,CREATE VG,CREATE LV,CREATE FOLDER,MOUNT LV
-        PRESS 4:DISPLAY LV/VG/PV
-        PRESS 5:EXTEND VG/LV
-        PRESS 6:REDUCE LV
-        PRESS 7:TO Return
-        """)
+                -------------------LVM MENU------------------------
+                -        Enter 1 : Display all Disks              -
+                ---------------------------------------------------
+                -        Enter 2 : Display Mount Points           -
+                ---------------------------------------------------
+                -        Enter 3 : Create PV/VG/LV                -
+                ---------------------------------------------------
+                -        Enter 4 : Display PV/VG/LV               -
+                ---------------------------------------------------
+                -        Enter 5 : Delete PV/VG/LV                -
+                ---------------------------------------------------
+                -        Enter 6 : Mount LV                       -
+                ---------------------------------------------------
+                -        Enter 7 : UnMount                        -
+                ---------------------------------------------------
+                -        Enter 8 : Extend VG/LV                   -
+                ---------------------------------------------------
+                -        Enter 9 : Reduce LV                      -
+                ---------------------------------------------------
+                -        Enter 10 : Exit                           -
+                ---------------------------------------------------
+            """)
         os.system('tput setaf 7')
-        choice = input("ENTER YOUR CHOICE:")
+        choice = input("Enter your choice: ")
         if choice == '1':
-            os.system("fdisk -l")
+            os.system("sshpass -p {} ssh {}@{} sudo fdisk -l".format(password, username, ip))
         elif choice == '2':
-            os.system("df -hT")
+            os.system("sshpass -p {} ssh {}@{} sudo df -hT".format(password, username, ip))
         elif choice == '3':
-                os.system('tput setaf 4')
-                print("""
-                            PRESS 1:CREATE PV
-                            PRESS 2:CREATE VG
-                            PRESS 3:CREATE LV
-                            PRESS 4:MOUNT LV
-                            PRESS 5: RETURN
-                    """)
-                os.system('tput setaf 7')
-                choice = input("Enter your choice: ")
-                if choice == '1':
-                    hd1 = input("ENTER DISK NAME: ")
-                    os.system("pvcreate /dev/" + hd1)
-                elif choice == '2':
-                    vg_name = input("ENTER VG NAME: ")
-                    space_separated_pv_name = input("space separated pv name : ").split()
-                    x = " /dev/".join(space_separated_pv_name)
-                    os.system("vgcreate {} /dev/{}".format(vg_name,x))
-                elif choice == '3':
-                    lv_name = input("ENTER NAME OF LV:")
-                    vg_name = input("ENTER VG NAME: ")
-                    size_of_lv = input("ENTER SIZE OF LV:")
-                    os.system("lvcreate --size +{}G --name {} {}".format(size_of_lv,lv_name,vg_name))
-                elif choice == "4":
-                    lv_name = input("ENTER NAME OF LV:")
-                    vg_name = input("ENTER VG NAME: ")
-                    os.system("mkfs.ext4 /dev/{}/{}".format(vg_name,lv_name))
-                    folder = input("ENTER FOLDER NAME TO MOUNT:")
-                    os.system("mkdir /{}".format(folder))
-                    os.system("mount /dev/{}/{} /{}".format(vg_name,lv_name,folder))
-                elif choice == "5":
-                    pass
-                else:
-                    print("wrong choice")
-        elif choice == '4':
-            c = input("ENTER PV/LV/VG: ")
-            if c.lower() == "pv":
-                os.system("pvdisplay")
-            elif c.lower() == "vg":
-                os.system("vgdisplay")
-            elif c.lower() == "lv":
-                os.system("lvdisplay")
+            create = input("Enter PV/VG/LV: ")
+            if create.lower() == 'pv':
+                HD_name = input("Disk Name: ")
+                os.system("sshpass -p {} ssh {}@{} sudo pvcreate {}".format(password, username, ip, HD_name))
+            elif create.lower() == 'vg':
+                HD_name = input("Enter space separated disk names: ")
+                vg_name = input("Enter volume group Name: ")
+                os.system(
+                    "sshpass -p {} ssh {}@{} sudo vgcreate {} {}".format(password, username, ip, vg_name, HD_name))
+            elif create.lower() == 'lv':
+                vg_name = input("Enter volume group name: ")
+                lv_name = input("Enter logical volume name: ")
+                lv_size = input("Enter LV size: ")
+                os.system(
+                    "sshpass -p {} ssh {}@{} sudo lvcreate --name {} --size +{}G {} ".format(password, username, ip,
+                                                                                             lv_name, lv_size, vg_name))
             else:
-                print("wrong choice")
+                print("Wrong create opertion")
+        elif choice == '4':
+            display = input("Display PV/VG/LV : ")
+            if display.lower() == 'pv':
+                os.system("sshpass -p {} ssh {}@{} sudo pvdisplay".format(password, username, ip))
+            elif display.lower() == 'vg':
+                os.system("sshpass -p {} ssh {}@{} sudo vgdisplay".format(password, username, ip))
+            elif display.lower() == 'lv':
+                os.system("sshpass -p {} ssh {}@{} sudo lvdisplay".format(password, username, ip))
+            else:
+                print("Wrong create opertion")
         elif choice == '5':
-            c = input("ENTER LV/VG: ")
-            if c == 'LV':
-                size_change = input("ENTER SIZE TO BE INCREASED:")
-                vg_name = input("ENTER VG NAME: ")
-                lv_name = input("ENTER NAME OF LV:")
-                os.system("lvextend --size +{}G  /dev/{}/{}".format(size_change,vg_name,lv_name))
-                os.system("resize2fs /dev/{}/{}".format(vg_name,lv_name))
-            elif c =="VG":
-                pv = input("Enter new PV name: ")
-                vg = input("Enter VG-Name: ")
-                os.system("vgextend {} /dev/{}".format(vg,pv))
+            delete = input("Delete PV/VG/LV : ")
+            if delete.lower() == 'pv':
+                delete_hd = input("Enter PV name: ")
+                os.system("sshpass -p {} ssh {}@{} sudo pvremove {}".format(password, username, ip, delete_hd))
+            elif delete.lower() == 'vg':
+                delete_hd = input("Enter VG name: ")
+                os.system("sshpass -p {} ssh {}@{} sudo vgremove {}".format(password, username, ip, delete_hd))
+            elif delete.lower() == 'lv':
+                vg_name = input("Enter VG name: ")
+                lv_name = input("Enter LG name: ")
+                os.system(
+                    "sshpass -p {} ssh {}@{} sudo lvremove /dev/{}/{}".format(password, username, ip, vg_name, lv_name))
+            else:
+                print("Wrong create opertion")
         elif choice == '6':
-            vg_name = input("ENTER VG NAME: ")
             lv_name = input("ENTER NAME OF LV:")
-            new_size = input("ENTER SIZE UPTO WHICH LV SHOULD BE REDUCED:")
-            if 'n'==input("lv is mounted y/n: "):
-                os.system("e2fsck - ff /dev/{}/{}".format(vg_name, lv_name))
-                os.system("lvreduce -r -L {}G /dev/{}/{}".format(new_size,vg_name,lv_name))
-            else:
-                print("please umount lv else you might loose online work")
-        elif choice == '7':
-            return
-        else:
-            print("wrong choice")
-
-        input("Enter to continue..")
-        os.system("clear")
-
-########################################################
-
-
-def RemoteLvm(username,password,Ip):
-    while True:
-        os.system('tput setaf 4')
-        print("""
-        ======================================
-                WELCOME TO MY LVM MENU
-        ======================================
-        PRESS 1:DISPLAY HARDISK INFORMATION
-        PRESS 2:DISPLAY MOUNT POINTS
-        PRESS 3:CREATE PV,CREATE VG,CREATE LV,CREATE FOLDER,MOUNT LV
-        PRESS 4:DISPLAY LV/VG/PV
-        PRESS 5:EXTEND VG/LV
-        PRESS 6:REDUCE LV
-        PRESS 7:TO Return
-        """)
-        os.system('tput setaf 7')
-        choice = input("ENTER YOUR CHOICE:")
-        if choice == '1':
-            os.system("sshpass -p {} ssh {}@{} sudo fdisk -l".format(password,username,Ip))
-        if choice == '2':
-            os.system("sshpass -p {} ssh {}@{} sudo df -hT".format(password,username,Ip))
-        elif choice == '3':
-                os.system('tput setaf 4')
-                print("""
-                            PRESS 1:CREATE PV
-                            PRESS 2:CREATE VG
-                            PRESS 3:CREATE LV
-                            PRESS 4:MOUNT LV
-                            PRESS 5: RETURN
-                    """)
-                os.system('tput setaf 7')
-                choice = input("Enter your choice: ")
-                if choice == '1':
-                    hd1 = input("ENTER DISK NAME: ")
-                    os.system("sshpass -p {} ssh {}@{} sudo pvcreate /dev/".format(password, username, Ip) + hd1)
-                elif choice == '2':
-                    vg_name = input("ENTER VG NAME: ")
-                    space_separated_pv_name = input("space separated pv name : ").split()
-                    x = " /dev/".join(space_separated_pv_name)
-                    os.system("sshpass -p {} ssh {}@{} sudo vgcreate {} /dev/{}".format(password, username, Ip, vg_name,x))
-                elif choice == '3':
-                    lv_name = input("ENTER NAME OF LV:")
-                    vg_name = input("ENTER VG NAME: ")
-                    size_of_lv = input("ENTER SIZE OF LV:")
-                    os.system("sshpass -p {} ssh {}@{} sudo lvcreate --size +{}G --name {} {}".format(password, username, Ip, size_of_lv, lv_name, vg_name))
-                elif choice == "4":
-                    lv_name = input("ENTER NAME OF LV:")
-                    vg_name = input("ENTER VG NAME: ")
-                    os.system("sshpass -p {} ssh {}@{} sudo mkfs.ext4 /dev/{}/{}".format(password, username, Ip, vg_name, lv_name))
-                    folder = input("ENTER FOLDER NAME TO MOUNT:")
-                    os.system("sshpass -p {} ssh {}@{} sudo mkdir /{}".format(password, username, Ip, folder))
-                    os.system("sshpass -p {} ssh {}@{} sudo mount /dev/{}/{} /{}".format(password, username, Ip, vg_name, lv_name, folder))
-                elif choice == "5":
-                    pass
-                else:
-                    print("wrong choice")
-        elif choice == '4':
-            c = input("ENTER PV/LV/VG: ")
-            if c.lower() == "pv":
-                os.system("sshpass -p {} ssh {}@{} sudo pvdisplay".format(password,username,Ip))
-            elif c.lower() == "vg":
-                os.system("sshpass -p {} ssh {}@{} sudo vgdisplay".format(password,username,Ip))
-            elif c.lower() == "lv":
-                os.system("sshpass -p {} ssh {}@{} sudo lvdisplay".format(password,username,Ip))
-        elif choice == '5':
-            c = input("ENTER LV/VG: ")
-            if c == 'LV':
-                size_change = input("ENTER SIZE TO BE INCREASED:")
-                vg_name = input("ENTER VG NAME: ")
-                lv_name = input("ENTER NAME OF LV:")
-                os.system("sshpass -p {} ssh {}@{} sudo lvextend --size +{}G  /dev/{}/{}".format(password,username,Ip,size_change,vg_name,lv_name))
-                os.system("sshpass -p {} ssh {}@{} sudo resize2fs /dev/{}/{}".format(password,username,Ip,vg_name,lv_name))
-            elif c =="VG":
-                pv = input("Enter new PV name: ")
-                vg = input("Enter VG-Name: ")
-                os.system("sshpass -p {} ssh {}@{} sudo vgextend {} /dev/{}".format(password,username,Ip, vg,pv))
-        elif choice == '6':
             vg_name = input("ENTER VG NAME: ")
-            lv_name = input("ENTER NAME OF LV:")
-            new_size = input("ENTER SIZE UPTO WHICH LV SHOULD BE REDUCED:")
-            if 'n'==input("lv is mounted y/n: "):
-                os.system("sshpass -p {} ssh {}@{} sudo e2fsck - ff /dev/{}/{}".format(password,username,Ip,vg_name, lv_name))
-                os.system("sshpass -p {} ssh {}@{} sudo lvreduce -r -L {}G /dev/{}/{}".format(password,username,Ip,new_size,vg_name,lv_name))
-            else:
-                print("please umount lv else you might loose online work")
+            os.system("sshpass -p {} ssh {}@{} sudo mkfs.ext4 /dev/{}/{}".format(password, username, ip, vg_name,
+                                                                                 lv_name))
+            folder = input("ENTER FOLDER NAME TO MOUNT:")
+            os.system("sshpass -p {} ssh {}@{} sudo mkdir {}".format(password, username, ip, folder))
+            os.system(
+                "sshpass -p {} ssh {}@{} sudo mount /dev/{}/{} {}".format(password, username, ip, vg_name, lv_name,
+                                                                          folder))
         elif choice == '7':
-            return
-        else:
-            print("wrong choice")
+            folder = input("Enter folder Name")
+            os.system("sshpass -p {}  ssh {}@{} sudo umount {}".format(password, username, ip, folder))
 
-
-        input("Enter to continue..")
-        os.system("clear")
-
-########################################################
-
-
-def CloudRemoteLvm(key_path,username,Ip):
-    while True:
-        os.system('tput setaf 4')
-        print("""
-        =====================================
-                WELCOME TO MY LVM MENU
-        =====================================
-        PRESS 1:DISPLAY HARDISK INFORMATION
-        PRESS 2:DISPLAY MOUNT POINTS
-        PRESS 3:CREATE PV,CREATE VG,CREATE LV,CREATE FOLDER,MOUNT LV
-        PRESS 4:DISPLAY LV/VG/PV
-        PRESS 5:EXTEND VG/LV
-        PRESS 6:REDUCE LV
-        PRESS 7:TO Return
-        """)
-        os.system('tput setaf 7')
-        choice = input("ENTER YOUR CHOICE:")
-        if choice == '1':
-            os.system("ls")
-            os.system("ssh -i {}  {}@{} sudo fdisk -l".format(key_path,username,Ip))
-        if choice == '2':
-            os.system("ssh -i {}  {}@{} sudo df -hT".format(key_path,username,Ip))
-        elif choice == '3':
-                os.system('tput setaf 4')
-                print("""
-                            PRESS 1:CREATE PV
-                            PRESS 2:CREATE VG
-                            PRESS 3:CREATE LV
-                            PRESS 4:MOUNT LV
-                            PRESS 5: RETURN
-                    """)
-                os.system('tput setaf 7')
-                choice = input("Enter your choice: ")
-                if choice == '1':
-                    hd1 = input("ENTER DISK NAME: ")
-                    os.system("ssh -i {} {}@{} sudo pvcreate /dev/".format(key_path,username,Ip) + hd1)
-                elif choice == '2':
-                    vg_name = input("ENTER VG NAME: ")
-                    space_separated_pv_name = input("space separated pv name : ").split()
-                    x = " /dev/".join(space_separated_pv_name)
-                    os.system("ssh -i {} {}@{} sudo vgcreate {} /dev/{}".format(key_path,username,Ip,vg_name,x))
-                elif choice == '3':
-                    lv_name = input("ENTER NAME OF LV:")
-                    vg_name = input("ENTER VG NAME: ")
-                    size_of_lv = input("ENTER SIZE OF LV:")
-                    os.system("ssh -i {} {}@{} sudo lvcreate --size +{}G --name {} {}".format(key_path,username,Ip, size_of_lv,lv_name,vg_name))
-                elif choice == "4":
-                    lv_name = input("ENTER NAME OF LV:")
-                    vg_name = input("ENTER VG NAME: ")
-                    os.system("ssh -i {} {}@{} sudo mkfs.ext4 /dev/{}/{}".format(key_path,username,Ip, vg_name,lv_name))
-                    folder = input("ENTER FOLDER NAME TO MOUNT:")
-                    os.system("ssh -i {}  {}@{} sudo mkdir /{}".format(key_path,username,Ip,folder))
-                    os.system("ssh -i {}  {}@{} sudo mount /dev/{}/{} /{}".format(key_path,username,Ip, vg_name,lv_name,folder))
-                elif choice == "5":
-                    pass
-                else:
-                    print("wrong choice")
-        elif choice == '4':
-            c = input("ENTER PV/LV/VG: ")
-            if c.lower() == "pv":
-                os.system("ssh -i {}  {}@{} sudo pvdisplay".format(key_path,username,Ip))
-            elif c.lower() == "vg":
-                os.system("ssh -i {}  {}@{} sudo vgdisplay".format(key_path,username,Ip))
-            elif c.lower() == "lv":
-                os.system("ssh -i {}  {}@{} sudo lvdisplay".format(key_path,username,Ip))
-        elif choice == '5':
-            c = input("ENTER LV/VG: ")
-            if c == 'LV':
+        elif choice == '8':
+            extend = input("Extend VG/LV : ")
+            if extend == 'LV':
                 size_change = input("ENTER SIZE TO BE INCREASED:")
                 vg_name = input("ENTER VG NAME: ")
                 lv_name = input("ENTER NAME OF LV:")
-                os.system("ssh -i {}  {}@{} sudo lvextend --size +{}G  /dev/{}/{}".format(key_path,username,Ip,size_change,vg_name,lv_name))
-                os.system("ssh -i {}  {}@{} sudo resize2fs /dev/{}/{}".format(key_path,username,Ip,vg_name,lv_name))
-            elif c =="VG":
+                os.system(
+                    "sshpass -p {} ssh {}@{} sudo lvextend --size +{}G  /dev/{}/{}".format(password, username, ip,
+                                                                                           size_change, vg_name,
+                                                                                           lv_name))
+                os.system(
+                    "sshpass -p {} ssh {}@{} sudo resize2fs /dev/{}/{}".format(password, username, ip, vg_name,
+                                                                               lv_name))
+            elif extend == "VG":
                 pv = input("Enter new PV name: ")
                 vg = input("Enter VG-Name: ")
-                os.system("ssh -i {} {}@{} sudo vgextend {} /dev/{}".format(key_path,username,Ip,vg,pv))
-        elif choice == '6':
+                os.system("sshpass -p {} ssh {}@{} sudo vgextend {} {}".format(password, username, ip, vg, pv))
+            else:
+                print("Wrong create opertion")
+        elif choice == '9':
             vg_name = input("ENTER VG NAME: ")
             lv_name = input("ENTER NAME OF LV:")
             new_size = input("ENTER SIZE UPTO WHICH LV SHOULD BE REDUCED:")
             if 'n' == input("lv is mounted y/n: "):
-                os.system("ssh -i {} {}@{} sudo e2fsck - ff /dev/{}/{}".format(key_path,username,Ip,vg_name, lv_name))
-                os.system("ssh -i {} {}@{} sudo lvreduce -r -L {}G /dev/{}/{}".format(key_path,username,Ip,new_size,vg_name,lv_name))
+                os.system("sshpass -p {} ssh {}@{} sudo e2fsck -f /dev/{}/{}".format(password, username, ip, vg_name,
+                                                                                     lv_name))
+                os.system("sshpass -p {} ssh {}@{} sudo lvreduce -r -L {}G /dev/{}/{}".format(password, username, ip,
+                                                                                              new_size, vg_name,
+                                                                                              lv_name))
             else:
                 print("please umount lv else you might loose online work")
-        elif choice == '7':
-            return
+        elif choice == '10':
+            exit()
         else:
-            print("Bottom")
-            print("wrong choice")
-
-
-        input("Enter to continue..")
+            print("Wrong Choice")
+        input("Enter to continue")
         os.system("clear")
-#######################################################
+
+
+def authTypeKey(username, keyPath, ip):
+    while True:
+        os.system('tput setaf 4')
+        print("""
+                    -------------------LVM MENU------------------------
+                    -        Enter 1 : Display all Disks              -
+                    ---------------------------------------------------
+                    -        Enter 2 : Display Mount Points           -
+                    ---------------------------------------------------
+                    -        Enter 3 : Create PV/VG/LV                -
+                    ---------------------------------------------------
+                    -        Enter 4 : Display PV/VG/LV               -
+                    ---------------------------------------------------
+                    -        Enter 5 : Delete PV/VG/LV                -
+                    ---------------------------------------------------
+                    -        Enter 6 : Mount LV                       -
+                    ---------------------------------------------------
+                    -        Enter 7 : UnMount                        -
+                    ---------------------------------------------------
+                    -        Enter 8 : Extend VG/LV                   -
+                    ---------------------------------------------------
+                    -        Enter 9 : Reduce LV                      -
+                    ---------------------------------------------------
+                    -        Enter 10 : Exit                           -
+                    ----------------------------------------------------
+                    """)
+        os.system('tput setaf 7')
+        choice = input("Enter your choice: ")
+        if choice == '1':
+            os.system("ssh -i {}  {}@{} sudo fdisk -l".format(keyPath, username, ip))
+        elif choice == '2':
+            os.system("ssh -i {} {}@{} sudo df -hT".format(keyPath, username, ip))
+        elif choice == '3':
+            create = input("Enter PV/VG/LV: ")
+            if create.lower() == 'pv':
+                HD_name = input("Disk Name: ")
+                os.system("ssh -i {} {}@{} sudo pvcreate {}".format(keyPath, username, ip, HD_name))
+            elif create.lower() == 'vg':
+                HD_name = input("Enter space separated disk names: ")
+                vg_name = input("Enter volume group Name: ")
+                os.system(
+                    "ssh -i {} {}@{} sudo vgcreate {} {}".format(keyPath, username, ip, vg_name, HD_name))
+            elif create.lower() == 'lv':
+                vg_name = input("Enter volume group name: ")
+                lv_name = input("Enter logical volume name: ")
+                lv_size = input("Enter LV size: ")
+                os.system(
+                    "ssh -i {} {}@{} sudo lvcreate --name {} --size +{}G {} ".format(keyPath, username, ip,
+                                                                                     lv_name, lv_size, vg_name))
+            else:
+                print("Wrong create opertion")
+        elif choice == '4':
+            display = input("Display PV/VG/LV : ")
+            if display.lower() == 'pv':
+                os.system("ssh -i {} {}@{} sudo pvdisplay".format(keyPath, username, ip))
+            elif display.lower() == 'vg':
+                os.system("ssh -i {} {}@{} sudo vgdisplay".format(keyPath, username, ip))
+            elif display.lower() == 'lv':
+                os.system("ssh -i {} {}@{} sudo lvdisplay".format(keyPath, username, ip))
+            else:
+                print("Wrong create opertion")
+        elif choice == '5':
+            delete = input("Delete PV/VG/LV : ")
+            if delete.lower() == 'pv':
+                delete_hd = input("Enter PV name: ")
+                os.system("ssh -i {} {}@{} sudo pvremove {}".format(keyPath, username, ip, delete_hd))
+            elif delete.lower() == 'vg':
+                delete_hd = input("Enter VG name: ")
+                os.system("ssh -i {} {}@{} sudo vgremove {}".format(keyPath, username, ip, delete_hd))
+            elif delete.lower() == 'lv':
+                vg_name = input("Enter VG name: ")
+                lv_name = input("Enter LG name: ")
+                os.system(
+                    "ssh -i {} {}@{} sudo lvremove /dev/{}/{}".format(keyPath, username, ip, vg_name, lv_name))
+            else:
+                print("Wrong create opertion")
+        elif choice == '6':
+            folder = input("Enter folder Name")
+            os.system("ssh -i {} {}@{} sudo umount -f {}".format(keyPath, username, ip, folder))
+        elif choice == '7':
+            lv_name = input("ENTER NAME OF LV:")
+            vg_name = input("ENTER VG NAME: ")
+            os.system("ssh -i  {} {}@{} sudo mkfs.ext4 /dev/{}/{}".format(keyPath, username, ip, vg_name, lv_name))
+            folder = input("ENTER FOLDER NAME TO MOUNT:")
+            os.system("ssh -i {} {}@{} sudo mkdir {}".format(keyPath, username, ip, folder))
+            os.system(
+                "ssh -i {} {}@{} sudo mount /dev/{}/{} {}".format(keyPath, username, ip, vg_name, lv_name, folder))
+        elif choice == '8':
+            extend = input("Extend VG/LV : ")
+            if extend == 'LV':
+                size_change = input("ENTER SIZE TO BE INCREASED:")
+                vg_name = input("ENTER VG NAME: ")
+                lv_name = input("ENTER NAME OF LV:")
+                os.system(
+                    "ssh -i {} {}@{} sudo lvextend --size +{}G  /dev/{}/{}".format(keyPath, username, ip, size_change,
+                                                                                   vg_name, lv_name))
+                os.system(
+                    "ssh -i {} {}@{} sudo resize2fs /dev/{}/{}".format(keyPath, username, ip, vg_name, lv_name))
+            elif extend == "VG":
+                pv = input("Enter new PV name: ")
+                vg = input("Enter VG-Name: ")
+                os.system("ssh -i {} {}@{} sudo vgextend {} {}".format(keyPath, username, ip, vg, pv))
+            else:
+                print("Wrong create opertion")
+        elif choice == '9':
+            vg_name = input("ENTER VG NAME: ")
+            lv_name = input("ENTER NAME OF LV:")
+            new_size = input("ENTER SIZE UPTO WHICH LV SHOULD BE REDUCED:")
+            if 'n' == input("lv is mounted y/n: "):
+                os.system("ssh -i{} {}@{} sudo e2fsck -f /dev/{}/{}".format(keyPath, username, ip, vg_name, lv_name))
+                os.system(
+                    "ssh -i{} {}@{} sudo lvreduce -r -L {}G /dev/{}/{}".format(keyPath, username, ip, new_size, vg_name,
+                                                                               lv_name))
+            else:
+                print("please umount lv else you might loose online work")
+        elif choice == '10':
+            exit()
+        else:
+            print("Wrong Choice")
+        input("Enter to continue")
+        os.system("clear")
 
 
 ########################################################
 ########################################################
 def LVM():
-    ostype = input("""
-                       	Enter local to work on local operating system
-                       	Enter remote to work on remote operating system
-                        """)
+    ipAddress = input("Enter IP of target System :")
+    username = input("UserName: ")
+    auth_type = input("Enter Authentication type-->  [key/password] : ")
 
-    if ostype == "local":
-        Local_LVM()
-    elif ostype == "remote":
-        Ip = input("Enter IP address: ")
-        username = input("Enter username: ")
-        login_type = input("Login using passsword  or key: ")
-        if login_type == "password":
-            password = getpass.getpass()
-            print("Enter password: ")
-            RemoteLvm(username,password,Ip)
-        elif login_type.lower() == "key":
-            key_path = input("Enter key path in this format[path/key]: ")
-            CloudRemoteLvm(key_path,username,Ip)
-        else:
-            print("wrong choice Enter password/key : ")
+    if auth_type.lower() == "key":
+        key_path = input("Enter key path from base directory: ")
+        authTypeKey(username, key_path, ipAddress)
+    elif auth_type.lower() == "password" or auth_type.lower() == "pass":
+        print("Setting Up environment please wait")
+        subprocess.getoutput("yum install sshpass -y")
+        password = input("Enter password: ")
+        authTypePass(username, password, ipAddress)
     else:
-        print("wrong choice ")
-        return
+        print("Not Valid")
+        exit()
