@@ -217,7 +217,7 @@ def s3():
             os.system('aws s3api list-buckets --query "Buckets[].Name"')
         elif choice == "4":
             bn = input("\n ENTER BUCKET NAME: ")
-            os.system("aws s3 rb s3://{} --force".format(bucket=bn))
+            os.system("aws s3 rb s3://{bucket} --force".format(bucket=bn))
         elif choice == "5":
             bn = input("\n ENTER BUCKET NAME: ")
             on = input("\n ENTER OBJECT NAME: ")
